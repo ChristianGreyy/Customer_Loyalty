@@ -7,6 +7,8 @@ import {
 } from '../../common/constants';
 import { databaseConfig } from './database.config';
 import { User } from 'src/modules/users/user.entity';
+import { Store } from '../stores/store.entity';
+import { Reward } from '../rewards/reward.entity';
 
 export const databaseProviders = [
   {
@@ -33,7 +35,7 @@ export const databaseProviders = [
       } catch (error) {
         console.error('Unable to connect to the database:', error);
       }
-      sequelize.addModels([User]);
+      sequelize.addModels([User, Reward, Store]);
       await sequelize.sync();
       return sequelize;
     },

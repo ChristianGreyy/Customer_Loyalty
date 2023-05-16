@@ -1,33 +1,28 @@
 import {
+  IsBoolean,
   IsDate,
   IsEnum,
   IsInt,
+  IsNumber,
   IsOptional,
   IsString,
   Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { Rank } from 'src/common/enums/rank';
 
-enum Gender {
-  male = 'male',
-  female = 'female',
-}
-
-enum Status {
-  active = 'active',
-  inactive = 'inactive',
-}
-
-export default class RegisterDto {
+export default class CreateStoreDto {
+  @IsOptional()
   @IsString()
-  role: string;
-
-  @IsString()
+  @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, {
+    message: 'Invalid email',
+  })
   @MinLength(4)
   @MaxLength(50)
-  username: string;
+  email: string;
 
+  @IsOptional()
   @IsString()
   @MinLength(8)
   @MaxLength(20)
@@ -36,19 +31,19 @@ export default class RegisterDto {
   })
   password: string;
 
+  @IsOptional()
   @IsString()
   @MinLength(2)
   @MaxLength(20)
-  firstName: string;
+  name: string;
 
+  @IsOptional()
   @IsString()
   @MinLength(2)
   @MaxLength(20)
-  lastName: string;
+  typePoint: string;
 
-  @IsString()
-  birthday: string;
-
-  @IsEnum(Gender, { message: 'Invalid gender of user' })
-  gender: string;
+  @IsOptional()
+  @IsBoolean()
+  isActive: boolean;
 }

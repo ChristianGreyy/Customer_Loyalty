@@ -1,28 +1,27 @@
 import {
+  IsBoolean,
   IsDate,
   IsEnum,
   IsInt,
+  IsNumber,
   IsOptional,
   IsString,
   Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
-
-enum Gender {
-  male = 'male',
-  female = 'female',
-}
-
-enum Status {
-  active = 'active',
-  inactive = 'inactive',
-}
+import { Gender } from 'src/common/enums/gender';
+import { Rank } from 'src/common/enums/rank';
 
 export default class UpdateUserDto {
   @IsOptional()
   @IsString()
-  role!: string;
+  @Matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, {
+    message: 'Invalid phone number',
+  })
+  @MinLength(4)
+  @MaxLength(20)
+  phoneNumber: string;
 
   @IsOptional()
   @IsString()
@@ -31,29 +30,41 @@ export default class UpdateUserDto {
   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
     message: 'password too weak',
   })
-  pass_word!: string;
+  password: string;
 
   @IsOptional()
   @IsString()
   @MinLength(2)
   @MaxLength(20)
-  firstName!: string;
+  firstName: string;
 
   @IsOptional()
   @IsString()
   @MinLength(2)
   @MaxLength(20)
-  lastName!: string;
+  lastName: string;
 
   @IsOptional()
   @IsString()
-  birthday!: string;
+  birthday: string;
 
   @IsOptional()
   @IsEnum(Gender, { message: 'Invalid gender of user' })
-  gender!: string;
+  gender: string;
 
   @IsOptional()
-  @IsEnum(Status, { message: 'Invalid status of user' })
-  status!: boolean;
+  @IsNumber()
+  point: number;
+
+  @IsOptional()
+  @IsString()
+  otpCode: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isCodeUsed: boolean;
+
+  @IsOptional()
+  @IsEnum(Rank, { message: 'Invalid rank' })
+  rank: string;
 }

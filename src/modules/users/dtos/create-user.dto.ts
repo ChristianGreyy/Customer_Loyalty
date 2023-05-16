@@ -1,32 +1,25 @@
 import {
+  IsBoolean,
   IsDate,
   IsEnum,
   IsInt,
+  IsNumber,
   IsOptional,
   IsString,
   Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
-
-enum Gender {
-  male = 'male',
-  female = 'female',
-}
-
-enum Status {
-  active = 'active',
-  inactive = 'inactive',
-}
+import { Gender } from 'src/common/enums/gender';
 
 export default class CreateUserDto {
   @IsString()
-  role: string;
-
-  @IsString()
+  @Matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, {
+    message: 'Invalid phone number',
+  })
   @MinLength(4)
-  @MaxLength(50)
-  username: string;
+  @MaxLength(20)
+  phoneNumber: string;
 
   @IsString()
   @MinLength(8)
@@ -51,4 +44,19 @@ export default class CreateUserDto {
 
   @IsEnum(Gender, { message: 'Invalid gender of user' })
   gender: string;
+
+  @IsNumber()
+  point: number;
+
+  @IsString()
+  otpCode: string;
+
+  @IsBoolean()
+  isCodeUsed: boolean;
+
+  @IsString()
+  refreshToekn: string;
+
+  @IsString()
+  rank: string;
 }

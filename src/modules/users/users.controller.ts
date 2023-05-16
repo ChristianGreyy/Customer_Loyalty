@@ -46,11 +46,8 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
     @Param('userId', ParseIntPipe) userId: number,
   ) {
-    const updatedUser = await this.userService.updateUserById(
-      updateUserDto,
-      userId,
-    );
-    return updatedUser;
+    await this.userService.updateUserById(updateUserDto, userId);
+    return { message: 'Update user successfully' };
   }
 
   @Delete('/:userId')

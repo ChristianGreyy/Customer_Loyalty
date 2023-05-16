@@ -28,28 +28,28 @@ export class UsersService {
   async createUser(createUserDto: any | CreateUserDto): Promise<User> {
     const hashedPassword: string = await bcrypt.hash(createUserDto.password, 7);
     createUserDto['password'] = hashedPassword;
+
     return await this.usersRepository.create(createUserDto);
   }
 
-  async updateUserById(updateUserDto: any, userId: number): Promise<any> {
+  async updateUserById(updateUserDto: any, userId: number): Promise<void> {
     const user = await this.getUserById(userId);
-    console.log(user);
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return await this.usersRepository.update(updateUserDto, {
+    await this.usersRepository.update(updateUserDto, {
       where: {
         id: userId,
       },
     });
   }
 
-  async deleteUserById(userId: number): Promise<any> {
+  async deleteUserById(userId: number): Promise<void> {
     const user = await this.getUserById(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return await this.usersRepository.destroy({
+    await this.usersRepository.destroy({
       where: {
         id: userId,
       },
