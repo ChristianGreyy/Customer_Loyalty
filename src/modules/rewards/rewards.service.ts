@@ -26,6 +26,7 @@ export class RewardsService {
   }
 
   async createReward(createRewardDto: any | CreateRewardDto): Promise<Reward> {
+    return;
     return await this.rewardsRepository.create(createRewardDto);
   }
 

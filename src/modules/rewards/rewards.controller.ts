@@ -8,16 +8,23 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { RewardsService } from './rewards.service';
 import CreateRewardDto from './dtos/create-reward.dto';
 import UpdateRewardDto from './dtos/update-reward.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UploadService } from '../upload/upload.service';
 
 @Controller('rewards')
 export class RewardsController {
-  constructor(private rewardService: RewardsService) {}
+  constructor(
+    private rewardService: RewardsService,
+    private uploadService: UploadService,
+  ) {}
 
   // @UseGuards(AuthGuard)
   @Get('/')
@@ -27,9 +34,18 @@ export class RewardsController {
   }
 
   @Post('/')
-  async createReward(@Body() createRewardDto: CreateRewardDto) {
-    const newReward = await this.rewardService.createReward(createRewardDto);
-    return newReward;
+  @UseInterceptors(FileInterceptor('file'))
+  async createReward(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createRewardDto: any,
+  ) {
+    const url = await this.uploadService.upload(file);
+    console.log(url);
+    // console.log(createRewardDto.storeId);
+    // console.log(file);
+    return url;
+    // const newReward = await this.rewardService.createReward(createRewardDto);
+    // return newReward;
   }
 
   @Get('/:rewardId')
