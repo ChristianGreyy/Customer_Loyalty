@@ -24,8 +24,7 @@ import { RolesGuard } from './roles.guard';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-  // @UseGuards(LocalAuthGuard)
-  // @UseGuards(AuthGuard('local'))
+  @UseGuards(LocalAuthGuard)
   @Post('/login-user')
   async loginUser(@Body() loginDto: LoginDto) {
     const token = await this.authService.loginUser(loginDto);
