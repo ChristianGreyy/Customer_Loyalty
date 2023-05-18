@@ -1,9 +1,15 @@
-import { BadRequestException, Inject, Injectable, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Post,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as twilio from 'twilio';
 import { User } from '../users/user.entity';
-import LoginDto from './dtos/login.dto';
+import LoginDto from './dtos/login-user.dto';
 import RegisterUserDto from './dtos/register-user.dto';
 import { UsersService } from '../users/users.service';
 import RegisterStoreDto from './dtos/register-store.dto';
@@ -15,6 +21,8 @@ import { Store } from '../stores/store.entity';
 import * as moment from 'moment';
 import { MailerService } from '../mailer/mailer.service';
 import VerifyStoreDto from './dtos/verify-store.dto';
+import LoginUserDto from './dtos/login-user.dto';
+import { TokenService } from '../token/token.service';
 
 @Injectable()
 export class AuthService {
@@ -24,10 +32,11 @@ export class AuthService {
     private readonly usersService: UsersService,
     @Inject('StoresRepository')
     private readonly storesRepository: typeof Store,
-    private readonly storesService: StoresService,
+    private readonly mailerService: MailerService,
     private readonly jwtService: JwtService,
     private readonly twiioService: TwilioService,
-    private readonly mailerService: MailerService,
+    private readonly storesService: StoresService,
+    private readonly tokenService: TokenService,
   ) {}
 
   async getRandomInt(min: number, max: number): Promise<number> {
@@ -36,22 +45,34 @@ export class AuthService {
     return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
   }
 
-  async login(loginDto: LoginDto): Promise<string> {
+  async validateUser(phoneNumber: string, password: string): Promise<any> {
     const user: any = await this.usersRepository.findOne({
-      where: { phoneNumber: loginDto.phoneNumber },
+      where: { phoneNumber: phoneNumber },
     });
-    if (!user) {
-      throw new BadRequestException('User or password is incorrect');
+    if (!user || user.isCodeUsed === false) {
+      return null;
     }
-
-    const isPassword = await bcrypt.compare(loginDto.password, user.password);
+    const isPassword = await bcrypt.compare(password, user.password);
     if (!isPassword) {
-      throw new BadRequestException('User or password is incorrect');
+      return null;
     }
+    return user;
+  }
 
-    const payload = { username: user.username, sub: user.id };
-
-    return await this.jwtService.signAsync(payload);
+  async loginUser(loginUserDto: LoginUserDto): Promise<any> {
+    const user = await this.validateUser(
+      loginUserDto.phoneNumber,
+      loginUserDto.password,
+    );
+    if (!user) {
+      throw new UnauthorizedException('Phone number or password is incorrect');
+    }
+    const payload = { phoneNumber: user.phoneNumber, sub: user.id };
+    return {
+      accessToken: await this.tokenService.generateAccessToken(payload),
+      refreshToken: await this.tokenService.generateRefreshToken(payload),
+    };
+    // return await this.jwtService.signAsync(payload);
   }
 
   async registerUser(registerUserDto: RegisterUserDto): Promise<User> {

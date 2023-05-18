@@ -12,11 +12,18 @@ npm install dotenv --save
 npm install --save @nestjs/passport passport passport-local
 npm install --save-dev @types/passport-local
 
+npm install --save @nestjs/jwt passport-jwt
+npm install --save-dev @types/passport-jwt
+
 # Bcrypt
 npm install bcrypt --save
 
 # Jwt
 npm install --save @nestjs/jwt jsonwebtoken
+
+# caching 
+npm install @nestjs/cache-manager cache-manager
+npm i ioredis
 
 # migration
 npx sequelize-cli model:generate --name Role --attributes name:string
@@ -36,4 +43,8 @@ npx sequelize-cli migration:generate --name add-expire-to-user
 npx sequelize-cli migration:generate --name drop-tables
 npx sequelize-cli migration:generate --name add-time-to-reward
 npx sequelize-cli migration:generate --name add-otp-to-stores
+npx sequelize-cli migration:generate --name add-fields-to-stores
+npx sequelize-cli migration:generate --name add-fields-to-orders
+npx sequelize-cli migration:generate --name add-point-to-user_rewards
+
 

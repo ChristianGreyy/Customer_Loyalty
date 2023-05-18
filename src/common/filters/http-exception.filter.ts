@@ -14,18 +14,25 @@ export class HttpErrorFilter implements ExceptionFilter {
   constructor() {
     this.logger = new Logger();
   }
-  catch(exception: Error, host: ArgumentsHost): any {
+  catch(exception: HttpException, host: ArgumentsHost): any {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest();
     const response = ctx.getResponse();
 
+    console.log(exception);
+
     const statusCode =
       exception instanceof HttpException
-        ? exception.getStatus()
+        ? exception.getResponse()?.['statusCode']
+          ? exception.getResponse()?.['statusCode']
+          : exception['statusCode']
         : HttpStatus.INTERNAL_SERVER_ERROR;
+
     const message =
       exception instanceof HttpException
-        ? exception.message || exception.message
+        ? exception.getResponse()?.['message']
+          ? exception.getResponse()?.['message']
+          : exception['message']
         : 'Internal server error';
 
     const devErrorResponse: any = {
@@ -34,7 +41,7 @@ export class HttpErrorFilter implements ExceptionFilter {
       path: request.url,
       method: request.method,
       errorName: exception?.name,
-      message: exception?.message,
+      message,
     };
 
     const prodErrorResponse: any = {

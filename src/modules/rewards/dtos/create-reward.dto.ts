@@ -1,9 +1,9 @@
+import { Optional } from '@nestjs/common';
 import {
   IsBoolean,
   IsDate,
   IsEnum,
   IsInt,
-  IsNumber,
   IsOptional,
   IsString,
   Matches,
@@ -13,21 +13,16 @@ import {
 import { Gender } from 'src/common/enums/gender';
 
 export default class CreateRewardDto {
-  @IsNumber()
-  storeId: number;
+  @IsString()
+  storeId: string;
 
   @IsString()
   @MinLength(2)
   @MaxLength(50)
   name: string;
 
-  @IsNumber()
-  point: number;
-
   @IsString()
-  @MinLength(2)
-  @MaxLength(50)
-  image: string;
+  point: string;
 
   @IsString()
   @MinLength(2)
@@ -39,8 +34,8 @@ export default class CreateRewardDto {
   @MaxLength(50)
   endTime: string;
 
-  @IsNumber()
-  quantity: number;
+  @IsString()
+  quantity: string;
 
   @IsString()
   @MinLength(2)

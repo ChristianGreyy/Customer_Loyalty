@@ -12,19 +12,38 @@ import { MailerModule } from './modules/mailer/mailer.module';
 import { UploadService } from './modules/upload/upload.service';
 import { MulterModule } from '@nestjs/platform-express';
 import { multerConfig } from './common/configs/multer.config';
+import { TokenService } from './modules/token/token.service';
+import { OrderDetailsService } from './modules/order_details/order_details.service';
+import { BullModule } from '@nestjs/bull';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { RedisService } from './modules/redis/redis.service';
+import { RedisModule } from './modules/redis/redis.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    MulterModule.register(multerConfig),
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
     DatabaseModule,
     UsersModule,
     AuthModule,
     RewardsModule,
     StoresModule,
     MailerModule,
+    RedisModule,
   ],
   controllers: [AppController],
-  providers: [AppService, MailerService, UploadService],
+  providers: [
+    AppService,
+    // MailerService,
+    // UploadService,
+    // TokenService,
+    // OrderDetailsService,
+    // RedisService,
+  ],
 })
 export class AppModule {}

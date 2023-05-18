@@ -1,26 +1,42 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import LoginDto from './dtos/login.dto';
+import LoginDto from './dtos/login-user.dto';
 import { AuthService } from './auth.service';
 import RegisterUserDto from './dtos/register-user.dto';
 import RegisterStoreDto from './dtos/register-store.dto';
 import { TwilioService } from '../twilio/twilio.service';
 import VerifyUserDto from './dtos/verify-user.dto';
 import VerifyStoreDto from './dtos/verify-store.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { LocalAuthGuard } from './local-auth.guard';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { HasRoles } from 'src/common/decorators/has-roles.decorator';
+import { Role } from 'src/common/enums/role';
+import { RolesGuard } from './roles.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    twilService: TwilioService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
+  // @UseGuards(LocalAuthGuard)
+  // @UseGuards(AuthGuard('local'))
+  @Post('/login-user')
+  async loginUser(@Body() loginDto: LoginDto) {
+    const token = await this.authService.loginUser(loginDto);
+    return token;
+  }
 
-  @Post('/login')
-  async login(@Body() loginDto: LoginDto) {
-    const access_token = await this.authService.login(loginDto);
-    return {
-      access_token: access_token,
-    };
+  @HasRoles(Role.user)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('/profile')
+  getProfile(@Request() req) {
+    return req.user;
   }
 
   @Post('/register-user')

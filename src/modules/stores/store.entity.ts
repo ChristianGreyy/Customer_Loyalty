@@ -11,15 +11,27 @@ import {
   HasMany,
   Is,
   Default,
+  BelongsToMany,
 } from 'sequelize-typescript';
 import { Gender } from '../../common/enums/gender';
 import { Role } from 'src/common/enums/role';
 import { Rank } from 'src/common/enums/rank';
+import { Reward } from '../rewards/reward.entity';
+import { TypePoint } from 'src/common/enums/typePoint';
+import { FLOAT } from 'sequelize';
+import { User } from '../users/user.entity';
+import { OrderDetail } from '../order_details/order_details.entity';
 
 @Table({
   tableName: 'Stores',
 })
 export class Store extends Model<Store> {
+  @HasMany(() => Reward)
+  rewards: Reward[];
+
+  @BelongsToMany(() => User, () => OrderDetail)
+  users: User[];
+
   @Unique
   @Column
   email: string;
@@ -32,10 +44,66 @@ export class Store extends Model<Store> {
 
   @Column({
     field: 'type_point',
-    type: DataType.ENUM(Rank.bronze, Rank.silver, Rank.golden),
-    defaultValue: Rank.bronze,
+    type: DataType.ENUM(TypePoint.fixed, TypePoint.rate),
+    defaultValue: TypePoint.fixed,
   })
-  typePoint: Rank;
+  typePoint: TypePoint;
+
+  @Column({
+    field: 'bronze_discount',
+    type: FLOAT,
+    defaultValue: 0,
+  })
+  bronzeDiscount: number;
+
+  @Column({
+    field: 'silver_discount',
+    type: FLOAT,
+    defaultValue: 0,
+  })
+  silverDiscount: number;
+
+  @Column({
+    field: 'golden_discount',
+    type: FLOAT,
+    defaultValue: 0,
+  })
+  goldenDiscount: number;
+
+  @Column({
+    field: 'max_point',
+    type: FLOAT,
+    defaultValue: 0,
+  })
+  maxPoint: number;
+
+  @Column({
+    field: 'bronze_point',
+    type: FLOAT,
+    defaultValue: 0,
+  })
+  bronzePoint: number;
+
+  @Column({
+    field: 'silver_point',
+    type: FLOAT,
+    defaultValue: 0,
+  })
+  silverPoint: number;
+
+  @Column({
+    field: 'golden_point',
+    type: FLOAT,
+    defaultValue: 0,
+  })
+  goldenPoint: number;
+
+  @Column({
+    field: 'minium_money',
+    type: FLOAT,
+    defaultValue: 0,
+  })
+  miniumMoney: number;
 
   @Column({ field: 'otp_code', type: DataType.STRING })
   otpCode: string;
@@ -55,7 +123,7 @@ export class Store extends Model<Store> {
     type: DataType.BOOLEAN,
     defaultValue: false,
   })
-  isActive: string;
+  isActive: boolean;
 
   @CreatedAt
   @Column({ field: 'createdAt' })

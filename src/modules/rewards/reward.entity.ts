@@ -10,15 +10,27 @@ import {
   DeletedAt,
   HasMany,
   Is,
+  BelongsTo,
+  ForeignKey,
+  BelongsToMany,
 } from 'sequelize-typescript';
+import { Store } from '../stores/store.entity';
+import { User } from '../users/user.entity';
+import { UserReward } from '../user_rewards/user_rewards.entity';
 
 @Table({
   tableName: 'Rewards',
 })
 export class Reward extends Model<Reward> {
-  @Unique
+  @BelongsToMany(() => User, () => UserReward)
+  users: User[];
+
+  @ForeignKey(() => Store)
   @Column({ field: 'store_id' })
   storeId: string;
+
+  @BelongsTo(() => Store)
+  stores: Store;
 
   @Unique
   @Column

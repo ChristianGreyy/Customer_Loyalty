@@ -10,9 +10,14 @@ cloudinary.config({
 
 @Injectable()
 export class UploadService {
-  async upload(file: any): Promise<string> {
+  async uploadImage(file: any): Promise<string> {
     console.log(file);
-    const result = await cloudinary.uploader.upload(file.path);
+    const b64 = Buffer.from(file.buffer).toString('base64');
+    let dataURI = 'data:' + file.mimetype + ';base64,' + b64;
+    const result = await cloudinary.uploader.upload(dataURI, {
+      folder: 'images', // Specify the folder where the image will be stored in Cloudinary
+      use_filename: true, // Use the original filename of the image
+    });
     return result.secure_url;
   }
 }

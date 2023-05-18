@@ -9,6 +9,8 @@ import { databaseConfig } from './database.config';
 import { User } from 'src/modules/users/user.entity';
 import { Store } from '../stores/store.entity';
 import { Reward } from '../rewards/reward.entity';
+import { OrderDetail } from '../order_details/order_details.entity';
+import { UserReward } from '../user_rewards/user_rewards.entity';
 
 export const databaseProviders = [
   {
@@ -35,8 +37,9 @@ export const databaseProviders = [
       } catch (error) {
         console.error('Unable to connect to the database:', error);
       }
-      sequelize.addModels([User, Reward, Store]);
+      sequelize.addModels([User, Reward, Store, OrderDetail, UserReward]);
       await sequelize.sync();
+
       return sequelize;
     },
   },

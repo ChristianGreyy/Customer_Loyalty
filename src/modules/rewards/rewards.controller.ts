@@ -17,14 +17,10 @@ import CreateRewardDto from './dtos/create-reward.dto';
 import UpdateRewardDto from './dtos/update-reward.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UploadService } from '../upload/upload.service';
 
 @Controller('rewards')
 export class RewardsController {
-  constructor(
-    private rewardService: RewardsService,
-    private uploadService: UploadService,
-  ) {}
+  constructor(private rewardService: RewardsService) {}
 
   // @UseGuards(AuthGuard)
   @Get('/')
@@ -34,18 +30,22 @@ export class RewardsController {
   }
 
   @Post('/')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('image'))
   async createReward(
-    @UploadedFile() file: Express.Multer.File,
-    @Body() createRewardDto: any,
+    @UploadedFile() image: Express.Multer.File,
+    @Body() createRewardDto: CreateRewardDto,
   ) {
-    const url = await this.uploadService.upload(file);
-    console.log(url);
-    // console.log(createRewardDto.storeId);
-    // console.log(file);
-    return url;
-    // const newReward = await this.rewardService.createReward(createRewardDto);
-    // return newReward;
+    const newReward = await this.rewardService.createReward(
+      createRewardDto,
+      image,
+    );
+    return newReward;
+  }
+
+  @Get('/stores/:storeId')
+  async getRewardsByStoreId(@Param('storeId', ParseIntPipe) storeId: number) {
+    const rewards = await this.rewardService.getRewardsByStoreId(storeId);
+    return rewards;
   }
 
   @Get('/:rewardId')

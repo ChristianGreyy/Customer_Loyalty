@@ -11,6 +11,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { Rank } from 'src/common/enums/rank';
+import { TypePoint } from 'src/common/enums/typePoint';
 
 export default class CreateStoreDto {
   @IsOptional()
@@ -38,10 +39,40 @@ export default class CreateStoreDto {
   name: string;
 
   @IsOptional()
-  @IsString()
-  @MinLength(2)
-  @MaxLength(20)
+  @IsEnum(TypePoint, { message: 'Invalid type point of store' })
   typePoint: string;
+
+  @IsOptional()
+  @IsNumber()
+  bronzeDiscount: number;
+
+  @IsOptional()
+  @IsNumber()
+  silverDiscount: number;
+
+  @IsOptional()
+  @IsNumber()
+  goldenDiscount: number;
+
+  @IsOptional()
+  @IsNumber()
+  maxPoint: number;
+
+  @IsOptional()
+  @IsNumber()
+  bronzePoint: number;
+
+  @IsOptional()
+  @IsNumber()
+  silverPoint: number;
+
+  @IsOptional()
+  @IsNumber()
+  goldenPoint: number;
+
+  @IsOptional()
+  @IsNumber()
+  miniumMoney: number;
 
   @IsOptional()
   @IsBoolean()

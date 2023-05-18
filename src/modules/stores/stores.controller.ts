@@ -17,7 +17,7 @@ import { AuthGuard } from 'src/common/guards/auth.guard';
 
 @Controller('stores')
 export class StoresController {
-  constructor(private storeService: StoresService) {}
+  constructor(private readonly storeService: StoresService) {}
 
   // @UseGuards(AuthGuard)
   @Get('/')
@@ -30,6 +30,12 @@ export class StoresController {
   async createStore(@Body() createStoreDto: CreateStoreDto) {
     const newStore = await this.storeService.createStore(createStoreDto);
     return newStore;
+  }
+
+  @Get('/rewards/:rewardId')
+  async getStoresByRewardId(@Param('rewardId', ParseIntPipe) rewardId: number) {
+    const rewards = await this.storeService.getStoresByRewardId(rewardId);
+    return rewards;
   }
 
   @Get('/:storeId')

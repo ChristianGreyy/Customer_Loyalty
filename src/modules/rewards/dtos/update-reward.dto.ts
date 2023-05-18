@@ -14,10 +14,6 @@ import { Gender } from 'src/common/enums/gender';
 
 export default class UpdateRewardDto {
   @IsOptional()
-  @IsNumber()
-  storeId: number;
-
-  @IsOptional()
   @IsString()
   @MinLength(2)
   @MaxLength(50)

@@ -14,6 +14,8 @@ import { UsersService } from './users.service';
 import CreateUserDto from './dtos/create-user.dto';
 import UpdateUserDto from './dtos/update-user.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
+import CreateOrderDetailDto from './dtos/create-order-detail';
+import CreateUserRewardDto from './dtos/create-user-reward';
 
 @Controller('users')
 export class UsersController {
@@ -54,5 +56,37 @@ export class UsersController {
   async deleteUserById(@Param('userId', ParseIntPipe) userId: number) {
     await this.userService.deleteUserById(userId);
     return { message: 'Delete user successfully' };
+  }
+
+  @Post('/:userId/order/:storeId')
+  async createOrderDetail(
+    @Param('userId', ParseIntPipe) userId,
+    @Param('storeId', ParseIntPipe) storeId,
+    @Body() createOrderDto: CreateOrderDetailDto,
+  ) {
+    const orderDetail = await this.userService.createOrderDetail(
+      userId,
+      storeId,
+      createOrderDto,
+    );
+
+    return orderDetail;
+  }
+
+  @Post('/:userId/change-reward/:rewardId')
+  async changeReward(
+    @Param('userId', ParseIntPipe) userId,
+    @Param('rewardId', ParseIntPipe) rewardId,
+    @Body() createUserRewardDto: CreateUserRewardDto,
+  ) {
+    const message = await this.userService.changeReward(
+      userId,
+      rewardId,
+      createUserRewardDto,
+    );
+
+    return {
+      message,
+    };
   }
 }
