@@ -20,6 +20,10 @@ import CreateUserRewardDto from './dtos/create-user-reward';
 import { UserReward } from '../user_rewards/user_rewards.entity';
 import { Queue } from 'twilio/lib/twiml/VoiceResponse';
 import { InjectQueue } from '@nestjs/bull';
+import { SEQUELIZE } from 'src/common/constants';
+import { Sequelize } from 'sequelize';
+import * as moment from 'moment';
+import { TwilioService } from '../twilio/twilio.service';
 
 @Injectable()
 export class UsersService {
@@ -29,10 +33,17 @@ export class UsersService {
     private readonly usersRepository: typeof User,
     @Inject('OrderDetailsRepository')
     private readonly orderDetailsRepository: typeof OrderDetail,
-
-    private readonly rewardsService: RewardsService,
     private readonly storesService: StoresService,
+    @Inject(SEQUELIZE)
+    private readonly sequelize: Sequelize,
+    private readonly twiioService: TwilioService,
   ) {}
+
+  async getRandomInt(min: number, max: number): Promise<number> {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+  }
 
   async getUsers(): Promise<User[]> {
     return await this.usersRepository.findAll();
@@ -44,6 +55,22 @@ export class UsersService {
   }
 
   async createUser(createUserDto: any | CreateUserDto): Promise<User> {
+    // Check user exists ?
+    const user: any = await this.usersRepository.findOne({
+      where: { phoneNumber: createUserDto.phoneNumber },
+    });
+    if (user) {
+      throw new BadRequestException('User already exists');
+    }
+
+    const otpCode = await this.getRandomInt(1000, 9999);
+    createUserDto['otpCode'] = otpCode;
+    this.twiioService.sendSms('+84359741482', `Your OTP code: ${otpCode}`);
+    // this.twiioService.sendSms('+840842338169', `Your OTP code: ${otpCode}`);
+
+    const codeExpireTime = moment().add(2, 'minutes');
+    createUserDto['codeExpireTime'] = codeExpireTime;
+
     const hashedPassword: string = await bcrypt.hash(createUserDto.password, 7);
     createUserDto['password'] = hashedPassword;
 
@@ -120,15 +147,24 @@ export class UsersService {
       storeId,
     };
     user.point += totalPoint;
-    if (user.point >= 5000) {
+    user.hoardingPoints += totalPoint;
+    if (user.hoardingPoints >= 5000) {
       user.rank = Rank.golden;
-    } else if (user.point >= 2000) {
+    } else if (user.hoardingPoints >= 2000) {
       user.rank = Rank.silver;
     }
-    await user.save();
-    const orderDetailDoc = await this.orderDetailsRepository.create(
-      orderDetail,
-    );
+    let orderDetailDoc;
+    try {
+      await this.sequelize.transaction(async (t) => {
+        await user.save({ transaction: t });
+        orderDetailDoc = await this.orderDetailsRepository.create(orderDetail, {
+          transaction: t,
+        });
+      });
+    } catch (err) {
+      console.log(err);
+    }
+
     return orderDetailDoc;
   }
 

@@ -27,7 +27,7 @@ export class Reward extends Model<Reward> {
 
   @ForeignKey(() => Store)
   @Column({ field: 'store_id' })
-  storeId: string;
+  storeId: number;
 
   @BelongsTo(() => Store)
   stores: Store;

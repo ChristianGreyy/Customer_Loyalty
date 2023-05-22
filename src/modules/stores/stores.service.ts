@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Inject,
   Injectable,
   NotFoundException,
@@ -11,6 +12,7 @@ import UpdateStoreDto from './dtos/update-store.dto';
 import { Store } from './store.entity';
 import { Reward } from '../rewards/reward.entity';
 import { RedisService } from '../redis/redis.service';
+import { MailerService } from '../mailer/mailer.service';
 
 @Injectable()
 export class StoresService {
@@ -18,7 +20,14 @@ export class StoresService {
     @Inject('StoresRepository')
     private readonly storesRepository: typeof Store,
     private readonly redisService: RedisService,
+    private readonly mailerService: MailerService,
   ) {}
+
+  async getRandomInt(min: number, max: number): Promise<number> {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+  }
 
   async getStores(): Promise<Store[]> {
     const cacheKey = 'CL:stores';
@@ -53,6 +62,21 @@ export class StoresService {
   }
 
   async createStore(createStoreDto: CreateStoreDto): Promise<Store> {
+    // Check user exists ?
+    const store: any = await this.storesRepository.findOne({
+      where: { email: createStoreDto.email },
+    });
+    if (store) {
+      throw new BadRequestException('Email already exists');
+    }
+    // generate OTP Code
+    const otpCode = await this.getRandomInt(1000, 9999);
+    createStoreDto['otpCode'] = otpCode.toString();
+    // set expire time to  OTP Code
+    const codeExpireTime = moment().add(2, 'minutes');
+    createStoreDto['codeExpireTime'] = codeExpireTime;
+    // send mailer
+    this.mailerService.sendOtpEmail(createStoreDto.email, otpCode.toString());
     return await this.storesRepository.create(createStoreDto);
   }
 

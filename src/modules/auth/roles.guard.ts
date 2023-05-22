@@ -3,32 +3,37 @@ import { Reflector } from '@nestjs/core';
 import { Role } from 'src/common/enums/role';
 import { User } from '../users/user.entity';
 import { Store } from '../stores/store.entity';
+import { Admin } from '../admin/admin.entity';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const requiredRoles = this.reflector.getAllAndOverride<Role[]>('roles', [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const requiredRoles: Role[] = this.reflector.getAllAndOverride<Role[]>(
+      'roles',
+      [context.getHandler(), context.getClass()],
+    );
     if (!requiredRoles) {
       return true;
     }
     const request = context.switchToHttp().getRequest();
     const { user } = request;
+    console.log(requiredRoles);
     let userDoc: any;
-    if (requiredRoles[0] === 'user') {
-      userDoc = await User.findByPk(user.userId);
-    } else if (requiredRoles[0] === 'store') {
-      userDoc = await Store.findByPk(user.userId);
-    } else if (requiredRoles[0] === 'admin') {
+    if (requiredRoles.includes(Role.user)) {
+      userDoc = await User.findByPk(user.sub);
     }
-    console.log(userDoc);
+    if (requiredRoles.includes(Role.store) && !userDoc) {
+      userDoc = await Store.findByPk(user.sub);
+    }
+    if (requiredRoles.includes(Role.admin) && !userDoc) {
+      userDoc = await Admin.findByPk(user.sub);
+    }
     if (!userDoc) {
       return false;
     }
+    console.log(userDoc);
     request['user'] = userDoc;
     return true;
     return requiredRoles.some((role) => user?.roles?.includes(role));

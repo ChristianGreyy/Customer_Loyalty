@@ -13,18 +13,15 @@ import { JwtStrategy } from './jwt.strategy';
 import { TokenService } from '../token/token.service';
 import { TokenModule } from '../token/token.module';
 import { RolesGuard } from './roles.guard';
+import { AdminsModule } from '../admin/admins.module';
 
 @Module({
   imports: [
-    // JwtModule.register({
-    //   global: true,
-    //   secret: process.env.JWT_SECRET_KEY,
-    //   signOptions: { expiresIn: '1h' },
-    // }),
     PassportModule,
     MailerModule,
     TwilioModule,
     UsersModule,
+    AdminsModule,
     StoresModule,
     RewardsModule,
     TokenModule,

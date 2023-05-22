@@ -2,32 +2,46 @@ import {
   Body,
   Controller,
   Get,
+  Param,
+  ParseIntPipe,
   Post,
   Request,
   UseGuards,
 } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
-import LoginDto from './dtos/login-user.dto';
 import { AuthService } from './auth.service';
 import RegisterUserDto from './dtos/register-user.dto';
 import RegisterStoreDto from './dtos/register-store.dto';
-import { TwilioService } from '../twilio/twilio.service';
 import VerifyUserDto from './dtos/verify-user.dto';
 import VerifyStoreDto from './dtos/verify-store.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { LocalAuthGuard } from './local-auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { HasRoles } from 'src/common/decorators/has-roles.decorator';
 import { Role } from 'src/common/enums/role';
 import { RolesGuard } from './roles.guard';
+import LoginAdminDto from './dtos/login-admin.dto';
+import LoginStoreDto from './dtos/login-store.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @UseGuards(LocalAuthGuard)
   @Post('/login-user')
-  async loginUser(@Body() loginDto: LoginDto) {
-    const token = await this.authService.loginUser(loginDto);
+  async loginUser(@Request() req) {
+    const token = await this.authService.loginUser(req.user);
+    return token;
+  }
+
+  @Post('/login-admin')
+  async loginAdmin(@Body() loginAdminDto: LoginAdminDto) {
+    const token = await this.authService.loginAdmin(loginAdminDto);
+    return token;
+  }
+
+  @Post('/login-store')
+  async loginStore(@Body() loginStoreDto: LoginStoreDto) {
+    const token = await this.authService.loginStore(loginStoreDto);
     return token;
   }
 
@@ -93,6 +107,24 @@ export class AuthController {
     const message = await this.authService.verifyRegisterStore(verifyStoreDto);
     return {
       message,
+    };
+  }
+
+  @HasRoles(Role.admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('/verify-store-active/:storeId')
+  async verifyStoreActive(@Param('storeId') storeId: number) {
+    const message = await this.authService.verifyStoreActive(storeId);
+    return {
+      message,
+    };
+  }
+
+  @Post('/reset-access/:userId')
+  async resetAccessToken(@Param('userId', ParseIntPipe) userId: number) {
+    const accessToken = await this.authService.resetAccessToken(userId);
+    return {
+      accessToken,
     };
   }
 }

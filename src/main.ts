@@ -24,10 +24,10 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setBasePath('api/v1')
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
+    .setTitle('Doc API')
+    .setDescription('The API description of customer loyalty')
     .setVersion('1.0')
-    .addTag('cats')
+    .addTag('API')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

@@ -18,6 +18,7 @@ import { BullModule } from '@nestjs/bull';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { RedisService } from './modules/redis/redis.service';
 import { RedisModule } from './modules/redis/redis.module';
+import { AdminsModule } from './modules/admin/admins.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { RedisModule } from './modules/redis/redis.module';
     AuthModule,
     RewardsModule,
     StoresModule,
+    AdminsModule,
     MailerModule,
     RedisModule,
   ],

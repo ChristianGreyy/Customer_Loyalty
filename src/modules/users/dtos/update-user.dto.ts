@@ -57,6 +57,10 @@ export default class UpdateUserDto {
   point: number;
 
   @IsOptional()
+  @IsNumber()
+  hoardingPoints: number;
+
+  @IsOptional()
   @IsString()
   otpCode: string;
 

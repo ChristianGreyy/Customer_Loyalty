@@ -53,6 +53,9 @@ export class User extends Model<User> {
   @Column({ type: DataType.DOUBLE, defaultValue: 0 })
   point: number;
 
+  @Column({ field: 'hoarding_points', type: DataType.DOUBLE, defaultValue: 0 })
+  hoardingPoints: number;
+
   @Column({ field: 'otp_code', type: DataType.STRING })
   otpCode: string;
 

@@ -125,6 +125,9 @@ export class Store extends Model<Store> {
   })
   isActive: boolean;
 
+  @Column({ field: 'refresh_token', type: DataType.STRING })
+  refreshToken: string;
+
   @CreatedAt
   @Column({ field: 'createdAt' })
   createdAt: Date;

@@ -9,6 +9,7 @@ import { UserRewardsModule } from '../user_rewards/user_rewards.module';
 import { BullModule } from '@nestjs/bull';
 import { UsersConsumer } from './users.consumer';
 import { DatabaseModule } from '../database/database.module';
+import { TwilioModule } from '../twilio/twilio.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { DatabaseModule } from '../database/database.module';
     RewardsModule,
     UserRewardsModule,
     DatabaseModule,
+    TwilioModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, UsersConsumer, ...usersProviders],

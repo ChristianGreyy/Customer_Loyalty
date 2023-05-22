@@ -11,6 +11,7 @@ import { Store } from '../stores/store.entity';
 import { Reward } from '../rewards/reward.entity';
 import { OrderDetail } from '../order_details/order_details.entity';
 import { UserReward } from '../user_rewards/user_rewards.entity';
+import { Admin } from '../admin/admin.entity';
 
 export const databaseProviders = [
   {
@@ -37,7 +38,14 @@ export const databaseProviders = [
       } catch (error) {
         console.error('Unable to connect to the database:', error);
       }
-      sequelize.addModels([User, Reward, Store, OrderDetail, UserReward]);
+      sequelize.addModels([
+        User,
+        Reward,
+        Store,
+        OrderDetail,
+        UserReward,
+        Admin,
+      ]);
       await sequelize.sync();
 
       return sequelize;

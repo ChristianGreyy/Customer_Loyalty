@@ -23,6 +23,9 @@ import { MailerService } from '../mailer/mailer.service';
 import VerifyStoreDto from './dtos/verify-store.dto';
 import LoginUserDto from './dtos/login-user.dto';
 import { TokenService } from '../token/token.service';
+import LoginAdminDto from './dtos/login-admin.dto';
+import { Admin } from '../admin/admin.entity';
+import LoginStoreDto from './dtos/login-store.dto';
 
 @Injectable()
 export class AuthService {
@@ -32,6 +35,8 @@ export class AuthService {
     private readonly usersService: UsersService,
     @Inject('StoresRepository')
     private readonly storesRepository: typeof Store,
+    @Inject('AdminsRepository')
+    private readonly adminsRepository: typeof Admin,
     private readonly mailerService: MailerService,
     private readonly jwtService: JwtService,
     private readonly twiioService: TwilioService,
@@ -59,38 +64,64 @@ export class AuthService {
     return user;
   }
 
-  async loginUser(loginUserDto: LoginUserDto): Promise<any> {
-    const user = await this.validateUser(
-      loginUserDto.phoneNumber,
-      loginUserDto.password,
-    );
-    if (!user) {
-      throw new UnauthorizedException('Phone number or password is incorrect');
-    }
+  async loginUser(user: any): Promise<any> {
     const payload = { phoneNumber: user.phoneNumber, sub: user.id };
+    const accessToken = await this.tokenService.generateAccessToken(payload);
+    const refreshToken = await this.tokenService.generateRefreshToken(payload);
+    user.refreshToken = refreshToken;
+    await user.save();
     return {
-      accessToken: await this.tokenService.generateAccessToken(payload),
-      refreshToken: await this.tokenService.generateRefreshToken(payload),
+      accessToken,
+      refreshToken,
     };
     // return await this.jwtService.signAsync(payload);
   }
 
-  async registerUser(registerUserDto: RegisterUserDto): Promise<User> {
-    // Check user exists ?
-    const user: any = await this.usersRepository.findOne({
-      where: { phoneNumber: registerUserDto.phoneNumber },
+  async loginAdmin(loginAdminDto: LoginAdminDto): Promise<any> {
+    const admin = await this.adminsRepository.findOne({
+      where: {
+        username: loginAdminDto.username,
+        password: loginAdminDto.password,
+      },
     });
-    if (user) {
-      throw new BadRequestException('User already exists');
+    if (!admin) {
+      throw new UnauthorizedException('username or password is incorrect');
     }
+    const payload = { username: admin.username, sub: admin.id };
+    const accessToken = await this.tokenService.generateAccessToken(payload);
+    const refreshToken = await this.tokenService.generateRefreshToken(payload);
+    admin.refreshToken = refreshToken;
+    await admin.save();
 
-    const otpCode = await this.getRandomInt(1000, 9999);
-    registerUserDto['otpCode'] = otpCode;
-    // this.twiioService.sendSms('+840359741482', `Your OTP code: ${otpCode}`);
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
 
-    const codeExpireTime = moment().add(2, 'minutes');
-    registerUserDto['codeExpireTime'] = codeExpireTime;
+  async loginStore(loginStoreDto: LoginStoreDto): Promise<any> {
+    const store = await this.storesRepository.findOne({
+      where: {
+        email: loginStoreDto.email,
+        password: loginStoreDto.password,
+      },
+    });
+    if (!store) {
+      throw new UnauthorizedException('email or password is incorrect');
+    }
+    const payload = { email: store.email, sub: store.id };
+    const accessToken = await this.tokenService.generateAccessToken(payload);
+    const refreshToken = await this.tokenService.generateRefreshToken(payload);
+    store.refreshToken = refreshToken;
+    await store.save();
 
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async registerUser(registerUserDto: RegisterUserDto): Promise<User> {
     return await this.usersService.createUser(registerUserDto);
   }
 
@@ -116,7 +147,7 @@ export class AuthService {
     const codeExpireTime = moment().add(2, 'minutes');
     user['codeExpireTime'] = codeExpireTime;
     // send sms
-    // this.twiioService.sendSms('+840359741482', `Your OTP code: ${otpCode}`);
+    this.twiioService.sendSms('+84359741482', `Your OTP code: ${otpCode}`);
 
     return await user.save();
   }
@@ -143,22 +174,6 @@ export class AuthService {
   }
 
   async registerStore(registerStore: RegisterStoreDto): Promise<Store> {
-    // Check user exists ?
-    const store: any = await this.storesRepository.findOne({
-      where: { email: registerStore.email },
-    });
-    if (store) {
-      throw new BadRequestException('Email already exists');
-    }
-    // generate OTP Code
-    const otpCode = await this.getRandomInt(1000, 9999);
-    registerStore['otpCode'] = otpCode.toString();
-    // set expire time to  OTP Code
-    const codeExpireTime = moment().add(2, 'minutes');
-    registerStore['codeExpireTime'] = codeExpireTime;
-    // send mailer
-    this.mailerService.sendOtpEmail(registerStore.email, otpCode.toString());
-
     return await this.storesService.createStore(registerStore);
   }
 
@@ -208,5 +223,27 @@ export class AuthService {
     store.isCodeUsed = true;
     await store.save();
     return 'Verify email successfully, please waiting for confirmation from admin';
+  }
+
+  async verifyStoreActive(storeId: number): Promise<string> {
+    // Check store exists ?
+    const store: any = await this.storesRepository.findOne({
+      where: {
+        id: storeId,
+        isActive: false,
+      },
+    });
+
+    if (!store) {
+      throw new BadRequestException('Store not found');
+    }
+    store.isActive = true;
+    await store.save();
+    return 'Verify store successfully';
+  }
+
+  async resetAccessToken(userId: number) {
+    const user = await this.usersService.getUserById(userId);
+    return await this.tokenService.resetAccessToken(user.refreshToken);
   }
 }

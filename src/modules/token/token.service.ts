@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as moment from 'moment';
 
@@ -33,5 +33,21 @@ export class TokenService {
     } catch (error) {
       return null;
     }
+  }
+
+  async resetAccessToken(refreshToken: string): Promise<string> {
+    const payload = await this.verifyToken(refreshToken);
+    if (!refreshToken) {
+      throw new UnauthorizedException('Unauthorized');
+    }
+
+    const accessTokenExpires = moment().add(
+      process.env.JWT_ACCESS_EXPIRATION_MINUTES,
+      'minutes',
+    );
+    payload['exp'] = accessTokenExpires.unix();
+    const accessToken = this.jwtService.sign(payload);
+
+    return accessToken;
   }
 }

@@ -33,6 +33,8 @@ npx sequelize-cli model:generate --name Reward --attributes name:string,point:do
 npx sequelize-cli model:generate --name Product --attributes name:string,price:integer,image:string,quantity:integer,description:string
 npx sequelize-cli model:generate --name Order_Details --attributes total:integer
 npx sequelize-cli model:generate --name User_Rewards --attributes quantity:integer
+npx sequelize-cli model:generate --name Admin --attributes username:string,password:string,first_name:string,last_name:string
+
 
 
 # add column
@@ -45,6 +47,7 @@ npx sequelize-cli migration:generate --name add-time-to-reward
 npx sequelize-cli migration:generate --name add-otp-to-stores
 npx sequelize-cli migration:generate --name add-fields-to-stores
 npx sequelize-cli migration:generate --name add-fields-to-orders
-npx sequelize-cli migration:generate --name add-point-to-user_rewards
+npx sequelize-cli migration:generate --name add-refreshTken-to-store
+npx sequelize-cli migration:generate --name add-hoarding_points-to-user
 
 

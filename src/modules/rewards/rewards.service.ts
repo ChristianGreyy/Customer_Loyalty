@@ -11,6 +11,7 @@ import { Reward } from './reward.entity';
 import { UploadService } from '../upload/upload.service';
 import { StoresService } from '../stores/stores.service';
 import { Store } from '../stores/store.entity';
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class RewardsService {
@@ -30,6 +31,19 @@ export class RewardsService {
       where: {
         storeId: storeId,
       },
+    });
+  }
+
+  async getRewardsByUserId(userId: number): Promise<Reward[]> {
+    return await this.rewardsRepository.findAll({
+      include: [
+        {
+          model: User,
+          where: {
+            id: userId,
+          },
+        },
+      ],
     });
   }
 
@@ -71,7 +85,43 @@ export class RewardsService {
     });
   }
 
+  async updateRewardsByPersonalStoreId(
+    updateRewardDto: any,
+    rewardId: number,
+    userId: number,
+  ): Promise<void> {
+    const reward = await this.rewardsRepository.findOne({
+      where: {
+        id: rewardId,
+        storeId: userId,
+      },
+    });
+    if (!reward) {
+      throw new NotFoundException('Reward not found');
+    }
+    await this.rewardsRepository.update(updateRewardDto, {
+      where: {
+        id: rewardId,
+      },
+    });
+  }
+
   async deleteRewardById(rewardId: number): Promise<void> {
+    const reward = await this.getRewardById(rewardId);
+    if (!reward) {
+      throw new NotFoundException('Reward not found');
+    }
+    await this.rewardsRepository.destroy({
+      where: {
+        id: rewardId,
+      },
+    });
+  }
+
+  async deleteRewardsByPersonalStoreId(
+    rewardId: number,
+    userId: number,
+  ): Promise<void> {
     const reward = await this.getRewardById(rewardId);
     if (!reward) {
       throw new NotFoundException('Reward not found');
