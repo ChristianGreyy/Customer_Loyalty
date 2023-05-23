@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { StoresService } from './stores.service';
@@ -19,13 +20,14 @@ import { Role } from 'src/common/enums/role';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { ApiTags } from '@nestjs/swagger';
+import UpdatePointRankDto from '../ranks/dtos/update-point-rank.dto';
 
 @ApiTags('Store')
 @Controller('stores')
 export class StoresController {
   constructor(private readonly storeService: StoresService) {}
 
-  @HasRoles(Role.admin, Role.store, Role.user)
+  @HasRoles(Role.admin, Role.store)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('/')
   async getStores() {
@@ -41,11 +43,38 @@ export class StoresController {
     return newStore;
   }
 
+  @HasRoles(Role.store)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('/personal')
+  async getStoreByPersonalId(@Request() req) {
+    const store = await this.storeService.getStoreByPersonalId(req.user.id);
+    if (!store) {
+      throw new NotFoundException('Store not found');
+    }
+    return store;
+  }
+
+  @HasRoles(Role.store)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Put('/point')
+  async updateStorePointById(
+    @Body() updatePointRankDto: UpdatePointRankDto,
+    @Request() req,
+  ) {
+    await this.storeService.updateStorePointById(
+      updatePointRankDto,
+      req.user.id,
+    );
+    return {
+      message: 'Update point of store successfully',
+    };
+  }
+
   @HasRoles(Role.admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('/rewards/:rewardId')
-  async getStoresByRewardId(@Param('rewardId', ParseIntPipe) rewardId: number) {
-    const rewards = await this.storeService.getStoresByRewardId(rewardId);
+  async getStoreByRewardId(@Param('rewardId', ParseIntPipe) rewardId: number) {
+    const rewards = await this.storeService.getStoreByRewardId(rewardId);
     return rewards;
   }
 

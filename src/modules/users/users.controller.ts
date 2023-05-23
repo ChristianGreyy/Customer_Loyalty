@@ -86,12 +86,6 @@ export class UsersController {
           rank: {
             example: 'bronze',
           },
-          createdAt: {
-            example: '2023-05-21T17:33:32.241Z',
-          },
-          updatedAt: {
-            example: '2023-05-22T01:21:25.169Z',
-          },
         },
       },
     },
@@ -178,7 +172,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('/personal')
   async getUserByPersonalId(@Request() req) {
-    const user = await this.userService.getUserById(req.user.id);
+    const user = await this.userService.getUserByPersonalId(req.user.id);
     if (!user) {
       throw new NotFoundException('User not found');
     }

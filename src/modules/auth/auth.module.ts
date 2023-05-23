@@ -14,6 +14,8 @@ import { TokenService } from '../token/token.service';
 import { TokenModule } from '../token/token.module';
 import { RolesGuard } from './roles.guard';
 import { AdminsModule } from '../admin/admins.module';
+import { RanksModule } from '../ranks/ranks.module';
+import { StoreRanksModule } from '../store_ranks/store_ranks.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { AdminsModule } from '../admin/admins.module';
     StoresModule,
     RewardsModule,
     TokenModule,
+    RanksModule,
+    StoreRanksModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy, RolesGuard],

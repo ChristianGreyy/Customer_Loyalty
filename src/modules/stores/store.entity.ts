@@ -15,12 +15,13 @@ import {
 } from 'sequelize-typescript';
 import { Gender } from '../../common/enums/gender';
 import { Role } from 'src/common/enums/role';
-import { Rank } from 'src/common/enums/rank';
 import { Reward } from '../rewards/reward.entity';
 import { TypePoint } from 'src/common/enums/typePoint';
 import { FLOAT } from 'sequelize';
 import { User } from '../users/user.entity';
 import { OrderDetail } from '../order_details/order_details.entity';
+import { Rank } from '../ranks/rank.entity';
+import { StoreRank } from '../store_ranks/store_ranks.entity';
 
 @Table({
   tableName: 'Stores',
@@ -31,6 +32,9 @@ export class Store extends Model<Store> {
 
   @BelongsToMany(() => User, () => OrderDetail)
   users: User[];
+
+  @BelongsToMany(() => Rank, () => StoreRank)
+  ranks: Rank[];
 
   @Unique
   @Column
@@ -49,59 +53,59 @@ export class Store extends Model<Store> {
   })
   typePoint: TypePoint;
 
-  @Column({
-    field: 'bronze_discount',
-    type: FLOAT,
-    defaultValue: 0,
-  })
-  bronzeDiscount: number;
+  // @Column({
+  //   field: 'bronze_discount',
+  //   type: FLOAT,
+  //   defaultValue: 0,
+  // })
+  // bronzeDiscount: number;
 
-  @Column({
-    field: 'silver_discount',
-    type: FLOAT,
-    defaultValue: 0,
-  })
-  silverDiscount: number;
+  // @Column({
+  //   field: 'silver_discount',
+  //   type: FLOAT,
+  //   defaultValue: 0,
+  // })
+  // silverDiscount: number;
 
-  @Column({
-    field: 'golden_discount',
-    type: FLOAT,
-    defaultValue: 0,
-  })
-  goldenDiscount: number;
+  // @Column({
+  //   field: 'golden_discount',
+  //   type: FLOAT,
+  //   defaultValue: 0,
+  // })
+  // goldenDiscount: number;
 
-  @Column({
-    field: 'max_point',
-    type: FLOAT,
-    defaultValue: 0,
-  })
-  maxPoint: number;
+  // @Column({
+  //   field: 'max_point',
+  //   type: FLOAT,
+  //   defaultValue: 0,
+  // })
+  // maxPoint: number;
 
-  @Column({
-    field: 'bronze_point',
-    type: FLOAT,
-    defaultValue: 0,
-  })
-  bronzePoint: number;
+  // @Column({
+  //   field: 'bronze_point',
+  //   type: FLOAT,
+  //   defaultValue: 0,
+  // })
+  // bronzePoint: number;
 
-  @Column({
-    field: 'silver_point',
-    type: FLOAT,
-    defaultValue: 0,
-  })
-  silverPoint: number;
+  // @Column({
+  //   field: 'silver_point',
+  //   type: FLOAT,
+  //   defaultValue: 0,
+  // })
+  // silverPoint: number;
 
-  @Column({
-    field: 'golden_point',
-    type: FLOAT,
-    defaultValue: 0,
-  })
-  goldenPoint: number;
+  // @Column({
+  //   field: 'golden_point',
+  //   type: FLOAT,
+  //   defaultValue: 0,
+  // })
+  // goldenPoint: number;
 
   @Column({
     field: 'minium_money',
     type: FLOAT,
-    defaultValue: 0,
+    defaultValue: 1,
   })
   miniumMoney: number;
 

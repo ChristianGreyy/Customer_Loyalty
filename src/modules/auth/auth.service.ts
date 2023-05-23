@@ -26,6 +26,8 @@ import { TokenService } from '../token/token.service';
 import LoginAdminDto from './dtos/login-admin.dto';
 import { Admin } from '../admin/admin.entity';
 import LoginStoreDto from './dtos/login-store.dto';
+import { RanksService } from '../ranks/ranks.service';
+import { StoreRank } from '../store_ranks/store_ranks.entity';
 
 @Injectable()
 export class AuthService {
@@ -37,6 +39,9 @@ export class AuthService {
     private readonly storesRepository: typeof Store,
     @Inject('AdminsRepository')
     private readonly adminsRepository: typeof Admin,
+    @Inject('StoreRanksRepository')
+    private readonly storeRanksRepository: typeof StoreRank,
+    private readonly rankService: RanksService,
     private readonly mailerService: MailerService,
     private readonly jwtService: JwtService,
     private readonly twiioService: TwilioService,
@@ -221,7 +226,9 @@ export class AuthService {
       throw new BadRequestException('OTP code is invalid or expired');
     }
     store.isCodeUsed = true;
+
     await store.save();
+
     return 'Verify email successfully, please waiting for confirmation from admin';
   }
 
@@ -239,6 +246,20 @@ export class AuthService {
     }
     store.isActive = true;
     await store.save();
+
+    const ranks = await this.rankService.getRanks();
+    const storeRanks = ranks.map((rank) => {
+      return {
+        rankId: rank.id,
+        storeId: store.id,
+        discount: 0,
+        point: 0,
+        maxPoint: 0,
+      };
+    });
+
+    await this.storeRanksRepository.bulkCreate(storeRanks);
+
     return 'Verify store successfully';
   }
 

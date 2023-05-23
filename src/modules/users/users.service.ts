@@ -13,7 +13,6 @@ import CreateOrderDetailDto from './dtos/create-order-detail';
 import { OrderDetail } from '../order_details/order_details.entity';
 import { Store } from '../stores/store.entity';
 import { StoresService } from '../stores/stores.service';
-import { Rank } from 'src/common/enums/rank';
 import { Reward } from '../rewards/reward.entity';
 import { RewardsService } from '../rewards/rewards.service';
 import CreateUserRewardDto from './dtos/create-user-reward';
@@ -24,6 +23,8 @@ import { SEQUELIZE } from 'src/common/constants';
 import { Sequelize } from 'sequelize';
 import * as moment from 'moment';
 import { TwilioService } from '../twilio/twilio.service';
+import { Rank } from '../ranks/rank.entity';
+import { StoreRank } from '../store_ranks/store_ranks.entity';
 
 @Injectable()
 export class UsersService {
@@ -33,6 +34,10 @@ export class UsersService {
     private readonly usersRepository: typeof User,
     @Inject('OrderDetailsRepository')
     private readonly orderDetailsRepository: typeof OrderDetail,
+    @Inject('RanksRepository')
+    private readonly ranksRepository: typeof Rank,
+    @Inject('StoreRanksRepository')
+    private readonly storeRanksRepository: typeof StoreRank,
     private readonly storesService: StoresService,
     @Inject(SEQUELIZE)
     private readonly sequelize: Sequelize,
@@ -46,11 +51,61 @@ export class UsersService {
   }
 
   async getUsers(): Promise<User[]> {
-    return await this.usersRepository.findAll();
+    return await this.usersRepository.findAll({
+      attributes: {
+        exclude: [
+          'password',
+          'otpCode',
+          'codeExpireTime',
+          'isCodeUsed',
+          'refreshToken',
+          // 'createdAt',
+          // 'updatedAt',
+        ],
+      },
+    });
   }
 
   async getUserById(userId: number): Promise<User> {
-    const user = await this.usersRepository.findByPk(userId);
+    const user = await this.usersRepository.findOne({
+      where: {
+        id: userId,
+      },
+      attributes: {
+        exclude: [
+          'password',
+          'otpCode',
+          'codeExpireTime',
+          'isCodeUsed',
+          'refreshToken',
+          // 'createdAt',
+          // 'updatedAt',
+        ],
+      },
+    });
+    return user;
+  }
+
+  async getUserByPersonalId(userId: number): Promise<User> {
+    const user = await this.usersRepository.findOne({
+      where: {
+        id: userId,
+      },
+      attributes: {
+        exclude: [
+          'password',
+          'otpCode',
+          'codeExpireTime',
+          'isCodeUsed',
+          'refreshToken',
+          // 'createdAt',
+          // 'updatedAt',
+        ],
+      },
+      include: {
+        model: Rank,
+      },
+    });
     return user;
   }
 
@@ -73,6 +128,14 @@ export class UsersService {
 
     const hashedPassword: string = await bcrypt.hash(createUserDto.password, 7);
     createUserDto['password'] = hashedPassword;
+
+    const rank = await this.ranksRepository.findOne({
+      where: {
+        name: 'bronze',
+      },
+    });
+
+    createUserDto['rankId'] = rank.id;
 
     return await this.usersRepository.create(createUserDto);
   }
@@ -110,33 +173,40 @@ export class UsersService {
     if (!store || store.isActive == false) {
       throw new NotFoundException('Store not found');
     }
-    const user = await this.getUserById(userId);
+    const user = await this.usersRepository.findOne({
+      where: {
+        id: userId,
+      },
+      include: [
+        {
+          model: Rank,
+        },
+      ],
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    let totalMoney = createOrderDto.totalMoney;
+    const totalMoney = createOrderDto.totalMoney;
     let totalPoint = 0;
+    const rank = user.rank;
+    const storeRanks = await this.storeRanksRepository.findOne({
+      where: {
+        rankId: rank.id,
+        storeId: store.id,
+      },
+    });
+
     switch (store.typePoint) {
       case 'fixed': {
-        let rate = Math.floor(totalMoney / store.miniumMoney);
-        if (user.rank == 'bronze') {
-          totalPoint = rate * store.bronzePoint;
-        } else if (user.rank == 'silver') {
-          totalPoint = rate * store.silverPoint;
-        } else if (user.rank == 'golden') {
-          totalPoint = rate * store.goldenPoint;
-        }
+        const rate = Math.floor(totalMoney / store.miniumMoney);
+        totalPoint = rate * storeRanks.point;
+        console.log(totalPoint);
         break;
       }
       case 'rate': {
-        if (user.rank == 'bronze') {
-          totalPoint = Math.floor(totalMoney * store.bronzeDiscount);
-        } else if (user.rank == 'silver') {
-          totalPoint = Math.floor(totalMoney * store.silverDiscount);
-        } else if (user.rank == 'golden') {
-          totalPoint = Math.floor(totalMoney * store.goldenDiscount);
-        }
-        totalPoint = totalPoint > store.maxPoint ? store.maxPoint : totalPoint;
+        totalPoint = Math.floor(totalMoney * storeRanks.discount);
+        totalPoint =
+          totalPoint > storeRanks.maxPoint ? storeRanks.maxPoint : totalPoint;
         break;
       }
     }
@@ -146,13 +216,22 @@ export class UsersService {
       userId,
       storeId,
     };
+
     user.point += totalPoint;
     user.hoardingPoints += totalPoint;
-    if (user.hoardingPoints >= 5000) {
-      user.rank = Rank.golden;
-    } else if (user.hoardingPoints >= 2000) {
-      user.rank = Rank.silver;
+
+    const ranks = await this.ranksRepository.findAll({
+      order: [['point', 'DESC']],
+    });
+
+    for (let rank of ranks) {
+      if (user.hoardingPoints > rank.point) {
+        console.log(rank.point);
+        user.rankId = rank.id;
+        break;
+      }
     }
+
     let orderDetailDoc;
     try {
       await this.sequelize.transaction(async (t) => {
@@ -164,7 +243,6 @@ export class UsersService {
     } catch (err) {
       console.log(err);
     }
-
     return orderDetailDoc;
   }
 

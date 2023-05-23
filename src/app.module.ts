@@ -19,6 +19,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { RedisService } from './modules/redis/redis.service';
 import { RedisModule } from './modules/redis/redis.module';
 import { AdminsModule } from './modules/admin/admins.module';
+import { RanksModule } from './modules/ranks/ranks.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { AdminsModule } from './modules/admin/admins.module';
     AuthModule,
     RewardsModule,
     StoresModule,
+    RanksModule,
     AdminsModule,
     MailerModule,
     RedisModule,

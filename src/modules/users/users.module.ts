@@ -10,6 +10,8 @@ import { BullModule } from '@nestjs/bull';
 import { UsersConsumer } from './users.consumer';
 import { DatabaseModule } from '../database/database.module';
 import { TwilioModule } from '../twilio/twilio.module';
+import { RanksModule } from '../ranks/ranks.module';
+import { StoreRanksModule } from '../store_ranks/store_ranks.module';
 
 @Module({
   imports: [
@@ -19,7 +21,9 @@ import { TwilioModule } from '../twilio/twilio.module';
     OrderDetailsModule,
     StoresModule,
     RewardsModule,
+    RanksModule,
     UserRewardsModule,
+    StoreRanksModule,
     DatabaseModule,
     TwilioModule,
   ],

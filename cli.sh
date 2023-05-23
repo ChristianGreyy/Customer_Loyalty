@@ -34,6 +34,8 @@ npx sequelize-cli model:generate --name Product --attributes name:string,price:i
 npx sequelize-cli model:generate --name Order_Details --attributes total:integer
 npx sequelize-cli model:generate --name User_Rewards --attributes quantity:integer
 npx sequelize-cli model:generate --name Admin --attributes username:string,password:string,first_name:string,last_name:string
+npx sequelize-cli model:generate --name Rank --attributes name:string,point:double
+npx sequelize-cli model:generate --name Store_Ranks --attributes discount:double,point:double,max_point:double  
 
 
 
@@ -49,5 +51,8 @@ npx sequelize-cli migration:generate --name add-fields-to-stores
 npx sequelize-cli migration:generate --name add-fields-to-orders
 npx sequelize-cli migration:generate --name add-refreshTken-to-store
 npx sequelize-cli migration:generate --name add-hoarding_points-to-user
+npx sequelize-cli migration:generate --name drop-column-to-store
+npx sequelize-cli migration:generate --name add-rank-to-user
+
 
 

@@ -12,14 +12,16 @@ import {
   Is,
   Default,
   BelongsToMany,
+  ForeignKey,
+  BelongsTo,
 } from 'sequelize-typescript';
 import { Gender } from '../../common/enums/gender';
 import { Role } from 'src/common/enums/role';
-import { Rank } from 'src/common/enums/rank';
 import { Store } from '../stores/store.entity';
 import { OrderDetail } from '../order_details/order_details.entity';
 import { Reward } from '../rewards/reward.entity';
 import { UserReward } from '../user_rewards/user_rewards.entity';
+import { Rank } from '../ranks/rank.entity';
 
 @Table({
   tableName: 'Users',
@@ -30,6 +32,13 @@ export class User extends Model<User> {
 
   @BelongsToMany(() => Reward, () => UserReward)
   rewards: Reward[];
+
+  @ForeignKey(() => Rank)
+  @Column({ field: 'rank_id' })
+  rankId: number;
+
+  @BelongsTo(() => Rank)
+  rank: Rank;
 
   @Unique
   @Column({ field: 'phone_number' })
@@ -71,12 +80,6 @@ export class User extends Model<User> {
 
   @Column({ field: 'refresh_token', type: DataType.STRING })
   refreshToken: string;
-
-  @Column({
-    type: DataType.ENUM(Rank.bronze, Rank.silver, Rank.golden),
-    defaultValue: Rank.bronze,
-  })
-  rank: Rank;
 
   @CreatedAt
   @Column({ field: 'createdAt' })

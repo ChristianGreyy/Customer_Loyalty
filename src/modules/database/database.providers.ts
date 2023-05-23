@@ -12,6 +12,8 @@ import { Reward } from '../rewards/reward.entity';
 import { OrderDetail } from '../order_details/order_details.entity';
 import { UserReward } from '../user_rewards/user_rewards.entity';
 import { Admin } from '../admin/admin.entity';
+import { StoreRank } from '../store_ranks/store_ranks.entity';
+import { Rank } from '../ranks/rank.entity';
 
 export const databaseProviders = [
   {
@@ -45,6 +47,8 @@ export const databaseProviders = [
         OrderDetail,
         UserReward,
         Admin,
+        Rank,
+        StoreRank,
       ]);
       await sequelize.sync();
 
