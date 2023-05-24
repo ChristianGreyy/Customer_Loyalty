@@ -1,29 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import * as handlebars from 'handlebars';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Queue } from 'bull';
+import { InjectQueue } from '@nestjs/bull';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
-export class MailerService {
-  private transport = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    auth: {
-      user: process.env.SMTP_USERNAME,
-      pass: process.env.SMTP_PASSWORD,
-    },
-  });
-  constructor() {
-    this.transport
-      .verify()
-      .then(() => console.info('Connected to email server'))
-      .catch(() =>
-        console.warn(
-          'Unable to connect to email server. Make sure you have configured the SMTP options in .env',
-        ),
-      );
-  }
+export class MailersService {
+  // private transport = nodemailer.createTransport({
+  //   host: process.env.SMTP_HOST,
+  //   port: process.env.SMTP_PORT,
+  //   auth: {
+  //     user: process.env.SMTP_USERNAME,
+  //     pass: process.env.SMTP_PASSWORD,
+  //   },
+  // });
+  // private mailerQueue: Queue;
+  // constructor(@InjectQueue('CL:mailer') mailerQueue: Queue) {
+  //   this.mailerQueue = mailerQueue;
+  //   this.transport
+  //     .verify()
+  //     .then(() => console.info('Connected to email server'))
+  //     .catch(() =>
+  //       console.warn(
+  //         'Unable to connect to email server. Make sure you have configured the SMTP options in .env',
+  //       ),
+  //     );
+  // }
+
+  constructor(@InjectQueue('CL:mailer') private mailerQueue: Queue) {}
+
   async sendOtpEmail(to: string, otp: string): Promise<void> {
     const filePath = path.join(
       __dirname,
@@ -39,6 +47,6 @@ export class MailerService {
       html,
     };
 
-    await this.transport.sendMail(mailOptions);
+    this.mailerQueue.add('send-otp', mailOptions);
   }
 }

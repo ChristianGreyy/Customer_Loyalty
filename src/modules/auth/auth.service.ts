@@ -19,7 +19,7 @@ import VerifyUserDto from './dtos/verify-user.dto';
 import { StoresService } from '../stores/stores.service';
 import { Store } from '../stores/store.entity';
 import * as moment from 'moment';
-import { MailerService } from '../mailer/mailer.service';
+import { MailersService } from '../mailer/mailer.service';
 import VerifyStoreDto from './dtos/verify-store.dto';
 import LoginUserDto from './dtos/login-user.dto';
 import { TokenService } from '../token/token.service';
@@ -42,7 +42,7 @@ export class AuthService {
     @Inject('StoreRanksRepository')
     private readonly storeRanksRepository: typeof StoreRank,
     private readonly rankService: RanksService,
-    private readonly mailerService: MailerService,
+    private readonly mailerService: MailersService,
     private readonly jwtService: JwtService,
     private readonly twiioService: TwilioService,
     private readonly storesService: StoresService,

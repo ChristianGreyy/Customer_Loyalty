@@ -12,7 +12,7 @@ import UpdateStoreDto from './dtos/update-store.dto';
 import { Store } from './store.entity';
 import { Reward } from '../rewards/reward.entity';
 import { RedisService } from '../redis/redis.service';
-import { MailerService } from '../mailer/mailer.service';
+import { MailersService } from '../mailer/mailer.service';
 import { Rank } from '../ranks/rank.entity';
 import { StoreRank } from '../store_ranks/store_ranks.entity';
 import { RanksService } from '../ranks/ranks.service';
@@ -28,7 +28,7 @@ export class StoresService {
     @Inject('StoreRanksRepository')
     private readonly storeRanksRepository: typeof StoreRank,
     private readonly redisService: RedisService,
-    private readonly mailerService: MailerService,
+    private readonly mailerService: MailersService,
   ) {}
 
   async getRandomInt(min: number, max: number): Promise<number> {

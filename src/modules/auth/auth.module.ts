@@ -6,7 +6,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { TwilioModule } from '../twilio/twilio.module';
 import { RewardsModule } from '../rewards/rewards.module';
 import { StoresModule } from '../stores/stores.module';
-import { MailerModule } from '../mailer/mailer.module';
+import { MailersModule } from '../mailer/mailer.module';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
@@ -20,7 +20,7 @@ import { StoreRanksModule } from '../store_ranks/store_ranks.module';
 @Module({
   imports: [
     PassportModule,
-    MailerModule,
+    MailersModule,
     TwilioModule,
     UsersModule,
     AdminsModule,

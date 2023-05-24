@@ -7,8 +7,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RewardsModule } from './modules/rewards/rewards.module';
 import { StoresModule } from './modules/stores/stores.module';
-import { MailerService } from './modules/mailer/mailer.service';
-import { MailerModule } from './modules/mailer/mailer.module';
+import { MailersModule } from './modules/mailer/mailer.module';
 import { UploadService } from './modules/upload/upload.service';
 import { MulterModule } from '@nestjs/platform-express';
 import { multerConfig } from './common/configs/multer.config';
@@ -37,7 +36,7 @@ import { RanksModule } from './modules/ranks/ranks.module';
     StoresModule,
     RanksModule,
     AdminsModule,
-    MailerModule,
+    MailersModule,
     RedisModule,
   ],
   controllers: [AppController],
