@@ -6,7 +6,7 @@ import {
   PRODUCTION,
 } from '../../common/constants';
 import { databaseConfig } from './database.config';
-import { User } from 'src/modules/users/user.entity';
+import { User } from '../users/user.entity';
 import { Store } from '../stores/store.entity';
 import { Reward } from '../rewards/reward.entity';
 import { OrderDetail } from '../order_details/order_details.entity';
@@ -19,7 +19,7 @@ export const databaseProviders = [
   {
     provide: SEQUELIZE,
     useFactory: async () => {
-      let config;
+      let config: any;
       switch (process.env.NODE_ENV) {
         case DEVELOPMENT:
           config = databaseConfig.development;

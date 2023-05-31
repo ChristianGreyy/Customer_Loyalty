@@ -14,9 +14,9 @@ import {
 import { StoresService } from './stores.service';
 import CreateStoreDto from './dtos/create-store.dto';
 import UpdateStoreDto from './dtos/update-store.dto';
-import { AuthGuard } from 'src/common/guards/auth.guard';
-import { HasRoles } from 'src/common/decorators/has-roles.decorator';
-import { Role } from 'src/common/enums/role';
+import { AuthGuard } from '../../common/guards/auth.guard';
+import { HasRoles } from '../../common/decorators/has-roles.decorator';
+import { Role } from '../../common/enums/role';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { ApiTags } from '@nestjs/swagger';
@@ -61,12 +61,13 @@ export class StoresController {
     @Body() updatePointRankDto: UpdatePointRankDto,
     @Request() req,
   ) {
-    await this.storeService.updateStorePointById(
+    const store = await this.storeService.updateStorePointById(
       updatePointRankDto,
       req.user.id,
     );
     return {
       message: 'Update point of store successfully',
+      store,
     };
   }
 

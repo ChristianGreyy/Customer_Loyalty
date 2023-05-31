@@ -11,9 +11,9 @@ import {
   MinLength,
 } from 'class-validator';
 import { Rank } from 'src/common/enums/rank';
-import { TypePoint } from 'src/common/enums/typePoint';
+import { TypePoint } from '../../../common/enums/typePoint';
 
-export default class CreateStoreDto {
+export default class UpdateStoreDto {
   @IsOptional()
   @IsString()
   @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, {

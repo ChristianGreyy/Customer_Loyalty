@@ -22,6 +22,7 @@ import { OrderDetail } from '../order_details/order_details.entity';
 import { Reward } from '../rewards/reward.entity';
 import { UserReward } from '../user_rewards/user_rewards.entity';
 import { Rank } from '../ranks/rank.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Table({
   tableName: 'Users',
@@ -40,6 +41,7 @@ export class User extends Model<User> {
   @BelongsTo(() => Rank)
   rank: Rank;
 
+  @ApiProperty()
   @Unique
   @Column({ field: 'phone_number' })
   phoneNumber: string;
@@ -47,21 +49,27 @@ export class User extends Model<User> {
   @Column
   password: string;
 
+  @ApiProperty()
   @Column({ field: 'first_name' })
   firstName: string;
 
+  @ApiProperty()
   @Column({ field: 'last_name' })
   lastName: string;
 
+  @ApiProperty()
   @Column(DataType.DATEONLY)
   birthday: string;
 
+  @ApiProperty()
   @Column({ type: DataType.ENUM(Gender.female, Gender.male) })
   gender: Gender;
 
+  @ApiProperty()
   @Column({ type: DataType.DOUBLE, defaultValue: 0 })
   point: number;
 
+  @ApiProperty()
   @Column({ field: 'hoarding_points', type: DataType.DOUBLE, defaultValue: 0 })
   hoardingPoints: number;
 

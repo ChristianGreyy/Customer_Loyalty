@@ -10,8 +10,8 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { Gender } from 'src/common/enums/gender';
-import { Rank } from 'src/common/enums/rank';
+import { Gender } from '../../../common/enums/gender';
+import { Rank } from '../../../common/enums/rank';
 
 export default class UpdateUserDto {
   @IsOptional()

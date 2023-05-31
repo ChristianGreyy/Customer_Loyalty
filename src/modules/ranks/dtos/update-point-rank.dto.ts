@@ -10,7 +10,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { Rank } from 'src/common/enums/rank';
+import { Rank } from '../../../common/enums/rank';
 
 export default class UpdatePointRankDto {
   @IsEnum(Rank, { message: 'Invalid rank' })

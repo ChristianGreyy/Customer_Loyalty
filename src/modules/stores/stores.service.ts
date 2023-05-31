@@ -105,16 +105,13 @@ export class StoresService {
     return newStore;
   }
 
-  async updateStoreById(updateStoreDto: any, storeId: number): Promise<void> {
+  async updateStoreById(updateStoreDto: any, storeId: number): Promise<Store> {
     const store = await this.getStoreById(storeId);
     if (!store) {
       throw new NotFoundException('Store not found');
     }
-    await this.storesRepository.update(updateStoreDto, {
-      where: {
-        id: storeId,
-      },
-    });
+    Object.assign(store, updateStoreDto);
+    return await store.save();
   }
 
   async updateStorePointById(

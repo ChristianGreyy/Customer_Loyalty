@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Role } from 'src/common/enums/role';
+import { Role } from '../../common/enums/role';
 import { User } from '../users/user.entity';
 import { Store } from '../stores/store.entity';
 import { Admin } from '../admin/admin.entity';

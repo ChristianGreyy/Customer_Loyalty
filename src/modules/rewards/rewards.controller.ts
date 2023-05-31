@@ -16,10 +16,10 @@ import {
 import { RewardsService } from './rewards.service';
 import CreateRewardDto from './dtos/create-reward.dto';
 import UpdateRewardDto from './dtos/update-reward.dto';
-import { AuthGuard } from 'src/common/guards/auth.guard';
+import { AuthGuard } from '../../common/guards/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { HasRoles } from 'src/common/decorators/has-roles.decorator';
-import { Role } from 'src/common/enums/role';
+import { HasRoles } from '../../common/decorators/has-roles.decorator';
+import { Role } from '../../common/enums/role';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import CreatePersonalRewardDto from './dtos/create-personal-reward.dto';

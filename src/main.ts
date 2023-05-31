@@ -8,6 +8,7 @@ import {
   SwaggerDocumentOptions,
   SwaggerModule,
 } from '@nestjs/swagger';
+import { setupSwagger } from './swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,17 +22,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-
-  const config = new DocumentBuilder()
-    .setBasePath('api/v1')
-    .setTitle('Doc API')
-    .setDescription('The API description of customer loyalty')
-    .setVersion('1.0')
-    .addTag('API')
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
-
+  setupSwagger(app);
   await app.listen(8080);
 }
 bootstrap();

@@ -17,8 +17,8 @@ import UpdateUserDto from './dtos/update-user.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
 import CreateOrderDetailDto from './dtos/create-order-detail';
 import CreateUserRewardDto from './dtos/create-user-reward';
-import { HasRoles } from 'src/common/decorators/has-roles.decorator';
-import { Role } from 'src/common/enums/role';
+import { HasRoles } from '../../common/decorators/has-roles.decorator';
+import { Role } from '../../common/enums/role';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import {
@@ -26,7 +26,12 @@ import {
   ApiResponse,
   ApiOperation,
   ApiOkResponse,
+  ApiBadRequestResponse,
+  ApiInternalServerErrorResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
 } from '@nestjs/swagger';
+import { User } from './user.entity';
 
 @ApiTags('User')
 @Controller('users')
@@ -34,61 +39,12 @@ export class UsersController {
   constructor(private userService: UsersService) {}
 
   @ApiOperation({ summary: 'Get all users' })
-  @ApiResponse({
-    status: 200,
-    description: 'Successful operation',
-    schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: {
-            example: 33,
-          },
-          phoneNumber: {
-            example: '0842338169',
-          },
-          password: {
-            example:
-              '$2b$07$hKEMdDMFl37H5FNU1Ugacu3eGvbY/Orlz0nef7cco4Ac4rOZOcSca',
-          },
-          firstName: {
-            example: 'Hung',
-          },
-          lastName: {
-            example: 'Truong',
-          },
-          birthday: {
-            example: '2002-05-23T00:00:00.000Z',
-          },
-          gender: {
-            example: 'male',
-          },
-          point: {
-            example: 0,
-          },
-          hoardingPoints: {
-            example: 400,
-          },
-          otpCode: {
-            example: '4353',
-          },
-          codeExpireTime: {
-            example: '2023-05-21T17:35:32.226Z',
-          },
-          isCodeUsed: {
-            example: true,
-          },
-          refreshToken: {
-            example:
-              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZU51bWJlciI6IjA4NDIzMzgxNjkiLCJzdWIiOjMzLCJleHAiOjE2OTUwODY0ODUsImlhdCI6MTY4NDcxODQ4NX0.ajIy96pqccdzpveXrv9Y_GnWsqUZyY3HqVjzaycjs7E',
-          },
-          rank: {
-            example: 'bronze',
-          },
-        },
-      },
-    },
+  @ApiOkResponse({ type: User, isArray: true })
+  @ApiBadRequestResponse({
+    description: 'Bad request',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal error',
   })
   @HasRoles(Role.admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -99,6 +55,8 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Create user' })
+  @ApiOkResponse({ type: User })
+  @ApiCreatedResponse({ type: User })
   @HasRoles(Role.admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('/')
@@ -108,66 +66,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Get personal profile' })
-  @ApiResponse({
-    status: 200,
-    description: 'Successful operation',
-    schema: {
-      type: 'object',
-
-      properties: {
-        id: {
-          example: 33,
-        },
-        phoneNumber: {
-          example: '0842338169',
-        },
-        password: {
-          example:
-            '$2b$07$hKEMdDMFl37H5FNU1Ugacu3eGvbY/Orlz0nef7cco4Ac4rOZOcSca',
-        },
-        firstName: {
-          example: 'Hung',
-        },
-        lastName: {
-          example: 'Truong',
-        },
-        birthday: {
-          example: '2002-05-23T00:00:00.000Z',
-        },
-        gender: {
-          example: 'male',
-        },
-        point: {
-          example: 0,
-        },
-        hoardingPoints: {
-          example: 400,
-        },
-        otpCode: {
-          example: '4353',
-        },
-        codeExpireTime: {
-          example: '2023-05-21T17:35:32.226Z',
-        },
-        isCodeUsed: {
-          example: true,
-        },
-        refreshToken: {
-          example:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZU51bWJlciI6IjA4NDIzMzgxNjkiLCJzdWIiOjMzLCJleHAiOjE2OTUwODY0ODUsImlhdCI6MTY4NDcxODQ4NX0.ajIy96pqccdzpveXrv9Y_GnWsqUZyY3HqVjzaycjs7E',
-        },
-        rank: {
-          example: 'bronze',
-        },
-        createdAt: {
-          example: '2023-05-21T17:33:32.241Z',
-        },
-        updatedAt: {
-          example: '2023-05-22T01:21:25.169Z',
-        },
-      },
-    },
-  })
+  @ApiOkResponse({ type: User })
   @HasRoles(Role.user)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('/personal')
@@ -180,65 +79,8 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Get user by id' })
-  @ApiResponse({
-    status: 200,
-    description: 'Successful operation',
-    schema: {
-      type: 'object',
-      properties: {
-        id: {
-          example: 33,
-        },
-        phoneNumber: {
-          example: '0842338169',
-        },
-        password: {
-          example:
-            '$2b$07$hKEMdDMFl37H5FNU1Ugacu3eGvbY/Orlz0nef7cco4Ac4rOZOcSca',
-        },
-        firstName: {
-          example: 'Hung',
-        },
-        lastName: {
-          example: 'Truong',
-        },
-        birthday: {
-          example: '2002-05-23T00:00:00.000Z',
-        },
-        gender: {
-          example: 'male',
-        },
-        point: {
-          example: 0,
-        },
-        hoardingPoints: {
-          example: 400,
-        },
-        otpCode: {
-          example: '4353',
-        },
-        codeExpireTime: {
-          example: '2023-05-21T17:35:32.226Z',
-        },
-        isCodeUsed: {
-          example: true,
-        },
-        refreshToken: {
-          example:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZU51bWJlciI6IjA4NDIzMzgxNjkiLCJzdWIiOjMzLCJleHAiOjE2OTUwODY0ODUsImlhdCI6MTY4NDcxODQ4NX0.ajIy96pqccdzpveXrv9Y_GnWsqUZyY3HqVjzaycjs7E',
-        },
-        rank: {
-          example: 'bronze',
-        },
-        createdAt: {
-          example: '2023-05-21T17:33:32.241Z',
-        },
-        updatedAt: {
-          example: '2023-05-22T01:21:25.169Z',
-        },
-      },
-    },
-  })
+  @ApiOkResponse({ type: User })
+  @ApiNotFoundResponse()
   @HasRoles(Role.admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('/:userId')
@@ -270,8 +112,8 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
     @Param('userId', ParseIntPipe) userId: number,
   ) {
-    await this.userService.updateUserById(updateUserDto, userId);
-    return { message: 'Update user successfully' };
+    const user = await this.userService.updateUserById(updateUserDto, userId);
+    return { message: 'Update user successfully', user };
   }
 
   @ApiOperation({ summary: 'Delete user by id' })

@@ -16,10 +16,10 @@ import {
 import { RanksService } from './ranks.service';
 import CreateRankDto from './dtos/create-rank.dto';
 import UpdateRankDto from './dtos/update-rank.dto';
-import { AuthGuard } from 'src/common/guards/auth.guard';
+import { AuthGuard } from '../../common/guards/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { HasRoles } from 'src/common/decorators/has-roles.decorator';
-import { Role } from 'src/common/enums/role';
+import { HasRoles } from '../../common/decorators/has-roles.decorator';
+import { Role } from '../../common/enums/role';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { ApiTags } from '@nestjs/swagger';

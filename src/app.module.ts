@@ -8,14 +8,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { RewardsModule } from './modules/rewards/rewards.module';
 import { StoresModule } from './modules/stores/stores.module';
 import { MailersModule } from './modules/mailer/mailer.module';
-import { UploadService } from './modules/upload/upload.service';
-import { MulterModule } from '@nestjs/platform-express';
-import { multerConfig } from './common/configs/multer.config';
-import { TokenService } from './modules/token/token.service';
-import { OrderDetailsService } from './modules/order_details/order_details.service';
 import { BullModule } from '@nestjs/bull';
-import { SequelizeModule } from '@nestjs/sequelize';
-import { RedisService } from './modules/redis/redis.service';
 import { RedisModule } from './modules/redis/redis.module';
 import { AdminsModule } from './modules/admin/admins.module';
 import { RanksModule } from './modules/ranks/ranks.module';
@@ -40,13 +33,6 @@ import { RanksModule } from './modules/ranks/ranks.module';
     RedisModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    // MailerService,
-    // UploadService,
-    // TokenService,
-    // OrderDetailsService,
-    // RedisService,
-  ],
+  providers: [AppService],
 })
 export class AppModule {}

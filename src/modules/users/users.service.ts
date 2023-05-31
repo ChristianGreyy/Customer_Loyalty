@@ -7,20 +7,14 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import CreateUserDto from './dtos/create-user.dto';
-import UpdateUserDto from './dtos/update-user.dto';
 import { User } from './user.entity';
 import CreateOrderDetailDto from './dtos/create-order-detail';
 import { OrderDetail } from '../order_details/order_details.entity';
-import { Store } from '../stores/store.entity';
 import { StoresService } from '../stores/stores.service';
-import { Reward } from '../rewards/reward.entity';
-import { RewardsService } from '../rewards/rewards.service';
 import CreateUserRewardDto from './dtos/create-user-reward';
-import { UserReward } from '../user_rewards/user_rewards.entity';
-// import { Queue } from 'twilio/lib/twiml/VoiceResponse';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
-import { SEQUELIZE } from 'src/common/constants';
+import { SEQUELIZE } from '../../common/constants';
 import { Sequelize } from 'sequelize';
 import * as moment from 'moment';
 import { TwilioService } from '../twilio/twilio.service';
@@ -30,7 +24,7 @@ import { StoreRank } from '../store_ranks/store_ranks.entity';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectQueue('CL:users') private audioQueue: Queue,
+    @InjectQueue('CL:users') private changeRewardQueue: Queue,
     @Inject('UsersRepository')
     private readonly usersRepository: typeof User,
     @Inject('OrderDetailsRepository')
@@ -141,16 +135,21 @@ export class UsersService {
     return await this.usersRepository.create(createUserDto);
   }
 
-  async updateUserById(updateUserDto: any, userId: number): Promise<void> {
+  async updateUserById(updateUserDto: any, userId: number): Promise<User> {
     const user = await this.getUserById(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    await this.usersRepository.update(updateUserDto, {
-      where: {
-        id: userId,
-      },
-    });
+    console.log(updateUserDto);
+    Object.assign(user, updateUserDto);
+    return await user.save();
+
+    // const updatedUser = await this.usersRepository.update(updateUserDto, {
+    //   where: {
+    //     id: userId,
+    //   },
+    // });
+    // console.log(updatedUser);
   }
 
   async deleteUserById(userId: number): Promise<void> {
@@ -252,7 +251,7 @@ export class UsersService {
     rewardId: number,
     createUserRewardDto: CreateUserRewardDto,
   ): Promise<any> {
-    const job = await this.audioQueue.add('change-reward', {
+    const job = await this.changeRewardQueue.add('change-reward', {
       userId,
       rewardId,
       quantity: createUserRewardDto.quantity,

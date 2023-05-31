@@ -1,18 +1,15 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsBoolean,
-  IsDate,
   IsEnum,
-  IsInt,
-  IsNumber,
-  IsOptional,
   IsString,
   Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { Gender } from 'src/common/enums/gender';
+import { Gender } from '../../../common/enums/gender';
 
 export default class CreateUserDto {
+  @ApiProperty()
   @IsString()
   @Matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, {
     message: 'Invalid phone number',
@@ -21,6 +18,7 @@ export default class CreateUserDto {
   @MaxLength(20)
   phoneNumber: string;
 
+  @ApiProperty()
   @IsString()
   @MinLength(8)
   @MaxLength(20)
@@ -29,19 +27,23 @@ export default class CreateUserDto {
   })
   password: string;
 
+  @ApiProperty()
   @IsString()
   @MinLength(2)
   @MaxLength(20)
   firstName: string;
 
+  @ApiProperty()
   @IsString()
   @MinLength(2)
   @MaxLength(20)
   lastName: string;
 
+  @ApiProperty()
   @IsString()
   birthday: string;
 
+  @ApiProperty({ enum: Gender })
   @IsEnum(Gender, { message: 'Invalid gender of user' })
-  gender: string;
+  gender: Gender;
 }

@@ -16,4 +16,16 @@ export class RedisService {
   async del(key: string): Promise<void> {
     await this.redis.del(key);
   }
+
+  async hget(key: string, field: string): Promise<object | string | null> {
+    return this.redis.hget(key, field);
+  }
+
+  async hgetall(key: string): Promise<object | string | null> {
+    return this.redis.hgetall(key);
+  }
+
+  async hdel(key: string, fieldsArray: any): Promise<number> {
+    return this.redis.hdel(key, fieldsArray);
+  }
 }

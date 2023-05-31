@@ -13,10 +13,8 @@ import {
   Default,
   BelongsToMany,
 } from 'sequelize-typescript';
-import { Gender } from '../../common/enums/gender';
-import { Role } from 'src/common/enums/role';
 import { Reward } from '../rewards/reward.entity';
-import { TypePoint } from 'src/common/enums/typePoint';
+import { TypePoint } from '../../common/enums/typePoint';
 import { FLOAT } from 'sequelize';
 import { User } from '../users/user.entity';
 import { OrderDetail } from '../order_details/order_details.entity';
