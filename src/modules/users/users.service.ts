@@ -71,8 +71,6 @@ export class UsersService {
           'codeExpireTime',
           'isCodeUsed',
           'refreshToken',
-          // 'createdAt',
-          // 'updatedAt',
         ],
       },
     });
@@ -91,8 +89,6 @@ export class UsersService {
           'codeExpireTime',
           'isCodeUsed',
           'refreshToken',
-          // 'createdAt',
-          // 'updatedAt',
         ],
       },
       include: {
@@ -114,7 +110,6 @@ export class UsersService {
     const otpCode = await this.getRandomInt(1000, 9999);
     createUserDto['otpCode'] = otpCode;
     this.twiioService.sendSms('+84359741482', `Your OTP code: ${otpCode}`);
-    // this.twiioService.sendSms('+840842338169', `Your OTP code: ${otpCode}`);
 
     const codeExpireTime = moment().add(2, 'minutes');
     createUserDto['codeExpireTime'] = codeExpireTime;
