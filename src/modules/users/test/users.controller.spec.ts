@@ -14,21 +14,6 @@ describe('UsersController', () => {
   let usersController: UsersController;
   let usersService: UsersService;
 
-  // const mockUsersService = {
-  //   createUser: jest.fn((dto) => {
-  //     return {
-  //       id: Date.now(),
-  //       ...dto,
-  //     };
-  //   }),
-  //   updateUserById: jest.fn((dto, id) => {
-  //     return {
-  //       id,
-  //       ...dto,
-  //     };
-  //   }),
-  // };
-
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [UsersController],
@@ -39,7 +24,6 @@ describe('UsersController', () => {
       .compile();
     usersService = moduleRef.get<UsersService>(UsersService);
     usersController = moduleRef.get<UsersController>(UsersController);
-    // jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -105,7 +89,7 @@ describe('UsersController', () => {
     });
   });
 
-  describe('updateUser', () => {
+  describe('updateUserById', () => {
     describe('when get user is called', () => {
       const updateUserDto: UpdateUserDto = {
         phoneNumber: '0842338168',
@@ -124,7 +108,7 @@ describe('UsersController', () => {
         expect(usersService.updateUserById).toBeCalledWith(updateUserDto, 1);
       });
 
-      it('then it should return updated user', () => {
+      it('then it should return updated user and message update successfully', () => {
         expect(user).toEqual({
           message: 'Update user successfully',
           user: userStub,
@@ -133,56 +117,20 @@ describe('UsersController', () => {
     });
   });
 
-  // it('should create a user', async () => {
-  //   const dto = {
-  //     phoneNumber: '0842338168',
-  //     password: 'HungTruong@',
-  //     firstName: 'Hung',
-  //     lastName: 'Truong',
-  //     gender: Gender.male,
-  //     birthday: '2002-05-23',
-  //   };
-  //   expect(await usersController.createUser(dto)).toEqual({
-  //     id: expect.any(Number),
-  //     phoneNumber: dto.phoneNumber,
-  //     password: dto.password,
-  //     firstName: dto.firstName,
-  //     lastName: dto.lastName,
-  //     gender: dto.gender,
-  //     birthday: dto.birthday,
-  //   });
+  describe('deleteUserById', () => {
+    describe('when get user is called', () => {
+      let user: any;
+      beforeEach(async () => {
+        user = await usersController.deleteUserById(1);
+      });
 
-  //   expect(mockUsersService.createUser).toHaveBeenCalledWith(dto);
-  // });
+      it('then it should call userService', () => {
+        expect(usersService.deleteUserById).toBeCalledWith(1);
+      });
 
-  // it('should update a user', async () => {
-  //   const dto = {
-  //     phoneNumber: '0842338168',
-  //     password: 'HungTruong@',
-  //     firstName: 'Hung',
-  //     lastName: 'Truong',
-  //     gender: Gender.male,
-  //     birthday: '2002-05-23',
-  //     point: 0,
-  //     hoardingPoints: 0,
-  //     otpCode: '1133',
-  //     isCodeUsed: true,
-  //     rank: Rank.bronze,
-  //   };
-
-  //   // expect(await usersController.updateUserById(dto, 1)).toEqual({
-  //   //   message: 'Update user successfully',
-  //   //   user: {
-  //   //     id: 1,
-  //   //     ...dto,
-  //   //   },
-  //   // });
-  //   expect(await usersController.updateUserById(dto, 1)).toEqual({
-  //     message: 'Update user successfully',
-  //     user: {
-  //       id: 1,
-  //       ...dto,
-  //     },
-  //   });
-  // });
+      it('then it should return message delete successfully', () => {
+        expect(user).toEqual({ message: 'Delete user successfully' });
+      });
+    });
+  });
 });
