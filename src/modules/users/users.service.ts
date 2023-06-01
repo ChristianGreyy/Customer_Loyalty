@@ -54,8 +54,6 @@ export class UsersService {
           'codeExpireTime',
           'isCodeUsed',
           'refreshToken',
-          // 'createdAt',
-          // 'updatedAt',
         ],
       },
     });
@@ -143,13 +141,6 @@ export class UsersService {
     console.log(updateUserDto);
     Object.assign(user, updateUserDto);
     return await user.save();
-
-    // const updatedUser = await this.usersRepository.update(updateUserDto, {
-    //   where: {
-    //     id: userId,
-    //   },
-    // });
-    // console.log(updatedUser);
   }
 
   async deleteUserById(userId: number): Promise<void> {

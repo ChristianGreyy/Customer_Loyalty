@@ -21,7 +21,7 @@ export default class UpdateUserDto {
   })
   @MinLength(4)
   @MaxLength(20)
-  phoneNumber: string;
+  phoneNumber?: string;
 
   @IsOptional()
   @IsString()
@@ -30,7 +30,7 @@ export default class UpdateUserDto {
   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
     message: 'password too weak',
   })
-  password: string;
+  password?: string;
 
   @IsOptional()
   @IsString()
@@ -42,33 +42,33 @@ export default class UpdateUserDto {
   @IsString()
   @MinLength(2)
   @MaxLength(20)
-  lastName: string;
+  lastName?: string;
 
   @IsOptional()
   @IsString()
-  birthday: string;
+  birthday?: string;
 
   @IsOptional()
   @IsEnum(Gender, { message: 'Invalid gender of user' })
-  gender: string;
+  gender?: string;
 
   @IsOptional()
   @IsNumber()
-  point: number;
+  point?: number;
 
   @IsOptional()
   @IsNumber()
-  hoardingPoints: number;
+  hoardingPoints?: number;
 
   @IsOptional()
   @IsString()
-  otpCode: string;
+  otpCode?: string;
 
   @IsOptional()
   @IsBoolean()
-  isCodeUsed: boolean;
+  isCodeUsed?: boolean;
 
   @IsOptional()
   @IsEnum(Rank, { message: 'Invalid rank' })
-  rank: string;
+  rank?: string;
 }

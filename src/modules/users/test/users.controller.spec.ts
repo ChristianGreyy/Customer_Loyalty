@@ -6,6 +6,7 @@ import { Test } from '@nestjs/testing';
 import { mockUsersService } from '../mocks/users.service.mock';
 import { userStub } from './stubs/user.stub';
 import CreateUserDto from '../dtos/create-user.dto';
+import UpdateUserDto from '../dtos/update-user.dto';
 
 // jest.mock('../users.service');
 
@@ -100,6 +101,34 @@ describe('UsersController', () => {
 
       it('then it should return created user', () => {
         expect(user).toEqual(userStub);
+      });
+    });
+  });
+
+  describe('updateUser', () => {
+    describe('when get user is called', () => {
+      const updateUserDto: UpdateUserDto = {
+        phoneNumber: '0842338168',
+        password: 'HungTruong@',
+        firstName: 'Hung',
+        lastName: 'Truong',
+        gender: Gender.male,
+        birthday: '2002-05-23',
+      };
+      let user: any;
+      beforeEach(async () => {
+        user = await usersController.updateUserById(updateUserDto, 1);
+      });
+
+      it('then it should call userService', () => {
+        expect(usersService.updateUserById).toBeCalledWith(updateUserDto, 1);
+      });
+
+      it('then it should return updated user', () => {
+        expect(user).toEqual({
+          message: 'Update user successfully',
+          user: userStub,
+        });
       });
     });
   });
