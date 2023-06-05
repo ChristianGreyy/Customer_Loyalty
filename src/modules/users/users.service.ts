@@ -103,6 +103,7 @@ export class UsersService {
     const user: any = await this.usersRepository.findOne({
       where: { phoneNumber: createUserDto.phoneNumber },
     });
+    console.log(user);
     if (user) {
       throw new BadRequestException('User already exists');
     }
